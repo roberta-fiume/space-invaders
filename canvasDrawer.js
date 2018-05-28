@@ -1,16 +1,17 @@
 
 window.addEventListener ("load", function() {
-    var sizeOfSquare = 20;
+    const sizeOfSquare = 20;
+    const borderSize = 2;
+    const borderCorrection = 1;
+    var canvas = document.getElementById("myCanvas");
+    var context = canvas.getContext("2d");
 
     function drawSquare(originX, originY, side) {
-        var canvas = document.getElementById("myCanvas");
-        var context = canvas.getContext("2d");
-        context.rect(originX, originY, side, side);  
-        context.stroke();
+        context.strokeRect(originX, originY, side, side);  
     }
     
-    function drawMainSquare() {
-        drawSquare(240, 480, sizeOfSquare);
+    function drawMainSquare(square) {
+        drawSquare(square.originX, square.originY, square.side);
     }
 
     function drawSquareRow(numberOfEnemiesInRow, rowIndex) {
@@ -25,10 +26,47 @@ window.addEventListener ("load", function() {
         }
     }
 
-    function moveSquare(square) {
-        
+    function createSquare(originX, originY, side) {
+        var square = new Square(originX, originY, side);
+        return square;        
     }
 
-    drawMainSquare();
-    drawAllEnemies(5)
+    function moveSquare(square, newOriginX, newOriginY) {
+        eraseSquare(square);
+        square.originX = newOriginX;
+        square.originY = newOriginY;
+        drawMainSquare(square);
+    }
+
+    function eraseSquare(square) {
+        context.clearRect(square.originX-borderCorrection, square.originY-borderCorrection, 
+                            square.side+borderSize, square.side+borderSize);
+    }
+
+    function moveOnArrowKey(square) {
+        document.addEventListener('keydown', function(event) {
+            const keyName = event.key;
+            switch(keyName) {
+                case "ArrowRight":
+                    moveSquare(square, square.originX+sizeOfSquare, square.originY);
+                    break;
+                case "ArrowLeft":
+                    moveSquare(square, square.originX-sizeOfSquare, square.originY);
+                    break;
+                case "ArrowUp":
+                    moveSquare(square, square.originX, square.originY-sizeOfSquare);
+                    break;
+                case "ArrowDown":
+                    moveSquare(square, square.originX, square.originY+sizeOfSquare);
+                    break;
+            }
+        }, false);
+    }
+
+    var mainSquare = createSquare(240, 480, sizeOfSquare);
+
+    drawMainSquare(mainSquare);
+    moveOnArrowKey(mainSquare);
+    drawAllEnemies(5);
+
 });
