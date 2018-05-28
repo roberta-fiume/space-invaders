@@ -6,36 +6,39 @@ window.addEventListener ("load", function() {
     var canvas = document.getElementById("myCanvas");
     var context = canvas.getContext("2d");
 
-    function drawSquare(originX, originY, side) {
-        context.strokeRect(originX, originY, side, side);  
-    }
-    
-    function drawMainSquare(square) {
-        drawSquare(square.originX, square.originY, square.side);
+    function drawSquare(square) {
+        context.strokeRect(square.originX, square.originY, square.side, square.side);  
     }
 
     function drawSquareRow(numberOfEnemiesInRow, rowIndex) {
+        var enemiesInRow = [];
         for(var i=0; i < numberOfEnemiesInRow; i++) {
-            drawSquare(140+(i*sizeOfSquare), 0+rowIndex, sizeOfSquare);
+            var enemySquare = createSquare(140+(i*sizeOfSquare), 0+rowIndex, sizeOfSquare);
+            drawSquare(enemySquare);
+            enemiesInRow.push(enemySquare);
         }
+        return enemiesInRow;
     }
 
     function drawAllEnemies(numberOfRows) {
+        var enemies = [];
         for(var i=0; i < numberOfRows; i++) {
-            drawSquareRow(11, i*sizeOfSquare);
+            var enemyRow = drawSquareRow(11, i*sizeOfSquare);
+            enemies.push(enemyRow);
         }
+        return enemies;
     }
 
     function createSquare(originX, originY, side) {
         var square = new Square(originX, originY, side);
         return square;        
     }
-
+    
     function moveSquare(square, newOriginX, newOriginY) {
         eraseSquare(square);
         square.originX = newOriginX;
         square.originY = newOriginY;
-        drawMainSquare(square);
+        drawSquare(square);
     }
 
     function eraseSquare(square) {
@@ -65,8 +68,12 @@ window.addEventListener ("load", function() {
 
     var mainSquare = createSquare(240, 480, sizeOfSquare);
 
-    drawMainSquare(mainSquare);
+    drawSquare(mainSquare);
     moveOnArrowKey(mainSquare);
-    drawAllEnemies(5);
+    var enemies = drawAllEnemies(5);
 
+    console.log("enemies", enemies);
+
+    // var firstEnemy = enemies[0][0];
+    // moveSquare(firstEnemy, 120, firstEnemy.originY);
 });
